@@ -25,6 +25,7 @@
 			border-radius: 10px;
 			background-color: white;
 			width: 90%;
+			padding: 10px;
 		}
 		#search-menu button {
 			
@@ -43,18 +44,18 @@
     <div id="map"></div>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHxxIBaipxzGs23BcQ-MNkcTPOiud7fc&libraries=places&callback=initMap">
     </script>
-    <div id="search-menu" style="display: none;">
-    	<form>
-    	<p>Search for a location: <input type="text" id="search-location" /></p>
-    	<p>
-    	Drop a marker at
-    	<button class="ui-button ui-widget ui-corner-all" id="cur-loc-button">your current location</button>
-    	</p>
-    	<p>
-    	<button type="submit" class="ui-button ui-widget ui-corner-all" id="submit-form">Submit suggested stop</button>
-    	</p>
-    	</form>
-    </div>
+		<div id="search-menu-clone" style="display: none;">
+			<form>
+			<p>Search for a location: <input type="text" id="search-location" /></p>
+			<p>
+			Drop a marker at
+			<button class="ui-button ui-widget ui-corner-all" id="cur-loc-button">your current location</button>
+			</p>
+			<p>
+			<button type="submit" class="ui-button ui-widget ui-corner-all" id="submit-form">Submit suggested stop</button>
+			</p>
+			</form>
+		</div>
 </body>
 
 </html>

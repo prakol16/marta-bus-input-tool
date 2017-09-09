@@ -2,9 +2,9 @@
 // prompted by your browser. If you see the error "The Geolocation service
 // failed.", it means you probably did not give permission for the browser to
 // locate you.
-var map, infoWindow, lines = [], successfulLines = [], gmarkers = [];
+var map, infoWindow, lines = [], successfulLines = [], gmarkers = [], locationMarkers = [], modifiedLines = {};
 
-var resolution = 500;
+var MAX_RESOLUTION = 500;
 
 function readRoute(callback) {
 	return $.ajax("SHAPES.txt").done(function(result) {
@@ -31,7 +31,7 @@ var rad = function(x) {
 
 var gmarkers = [];
 
-function addLatLng(line, path, event, i) {
+function addLatLng(line, path, event, i, res) {
 	var marker = new google.maps.Marker({
 		position: event.latLng,
 		title: '#' + (i+1),
@@ -43,19 +43,25 @@ function addLatLng(line, path, event, i) {
 		},
 		draggable : true
 	});
-	marker.set("c_point", i);
 	gmarkers.push(marker);
-	marker.bindTo('position', line.binder, i.toString());
+	marker.bindTo('position', line.binder, [i, res, line.get("id")].join());
+}
+
+function clearEditable() {
+	while (gmarkers.length)
+		gmarkers.pop().setMap(null);
 }
 
 function makeEditable(line) {
+	clearEditable();
 	var path = line.getPath();
 	var locations = path.getArray();
 	line.binder = new MVCArrayBinder(path);
+	var resolution = Math.max(1, Math.round(Math.min(MAX_RESOLUTION, locations.length / 10)));
 	for(var i = 0; i < locations.length; i+=resolution) {
 		var evt = {};
 		evt.latLng = locations[i];
-		addLatLng(line, path, evt, i);
+		addLatLng(line, path, evt, i, resolution);
   	}
 }
 
@@ -73,8 +79,12 @@ $(window).on("load", function() {
 		}
 	}
 	MVCArrayBinder.prototype.set = function(key, val) {
-		if (!isNaN(parseInt(key))) {
-			var ikey = parseInt(key);
+		if (/^\d+,\d+,\d+$/.test(key)) {
+			var splitKey = key.split(",");
+			var resolution = parseInt(splitKey[1]);
+			var ikey = parseInt(splitKey[0]);
+			var id = splitKey[2];
+			modifiedLines[id] = true;
 			var start = Math.max(0, ikey - resolution), startPos = this.array_.getAt(start);
 			var end = Math.min(this.array_.length, ikey + resolution), endPos = this.array_.getAt(end - 1);
 			for (var i = start; i < end; ++i) {
@@ -113,6 +123,7 @@ var getDistance = function(p1, p2) {
 
 function findClosestLine(pnt) {
 	var MIN_DIST = 500; //meters
+	console.log(pnt.lat(), pnt.lng());
 	successfulLines = [];
 	var bestBestDist = Infinity;
 	var bestLine = null;
@@ -121,7 +132,6 @@ function findClosestLine(pnt) {
 		var path = line.getPath().getArray();
 		var bestDist = Infinity;
 		lines[i].setVisible(true);
-		google.maps.event.clearListeners(line, "click")
 		for (var j = 0; j < path.length; ++j) {
 			var dist = getDistance(path[j], pnt);
 			if (dist < bestDist) {
@@ -138,11 +148,9 @@ function findClosestLine(pnt) {
 			lines[i].setVisible(false);
 		}
 	}
-	console.log(bestBestDist);
-	console.log(bestLine);
 }
 
-function addMarkerAtLocation() {
+function addMarkerAtCurrentLocation() {
 	// Try HTML5 geolocation.
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
@@ -150,13 +158,9 @@ function addMarkerAtLocation() {
 				lat: position.coords.latitude,
 				lng: position.coords.longitude
 			};
-			findClosestLine(new google.maps.LatLng(pos.lat, pos.lng));
 			// infoWindow.setPosition(pos);
 			// infoWindow.setContent('Your Location');
-			new google.maps.Marker({
-				position: pos,
-				map: map
-			});
+			addMarkerAtLocation(pos);
 		}, function() {
 			handleLocationError(true, infoWindow, map.getCenter());
 		});
@@ -166,6 +170,29 @@ function addMarkerAtLocation() {
 	}
 }
 
+function addMarkerAtLocation(pos) {
+	console.log("Position", pos);
+	var latLng = pos instanceof google.maps.LatLng ? pos : new google.maps.LatLng(pos);
+	for (var i = 0; i < locationMarkers.length; ++i) {
+		if (getDistance(locationMarkers[i].position, latLng) < 5) {
+			// already placed marker
+			google.maps.event.trigger(locationMarkers[i], "click");
+			return;
+		}
+	}
+	var marker = new google.maps.Marker({
+		position: pos,
+		map: map
+	});
+	marker.addListener("click", function() {
+		findClosestLine(this.position);
+		map.setCenter(latLng);
+	});
+	locationMarkers.push(marker);
+	map.setCenter(latLng);
+	findClosestLine(latLng);
+}
+
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -173,11 +200,10 @@ function initMap() {
             lat: 33.9193213,
             lng: -84.3168602
         },
-        zoom: 11,
+        zoom: 10,
         disableDefaultUI: true
     });
-	
-	var getColor = x => "rgb(" + (x % 256) + "," + (x*31 % 256) + "," + (x*123 % 256)+")";
+	var getColor = function(x) { return "rgb(" + (x % 256) + "," + (x*31 % 256) + "," + (x*123 % 256)+")"; };
 	readRoute(function(routes) {
 		var ind = 0;
 		for (var id in routes) {
@@ -188,16 +214,26 @@ function initMap() {
 				strokeOpacity: 1.0,
 				strokeWeight: 3
         	}));
+			lines[ind].set("id", id);
         	lines[ind].setMap(map);
+			lines[ind].addListener("click", function() {
+				makeEditable(this);
+			});
         	ind++;
 		}
 	});
-	/**/
 
-    var div = $("#search-menu").clone();
-    var searchBox = new google.maps.places.SearchBox(div.find("#search-location")[0]);
+
+    var div = $("#search-menu-clone").clone();
+	div.attr("id", "search-menu");
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(div[0]);
-    div.show();
+	div.show();
+    var searchBox = new google.maps.places.SearchBox(div.find("#search-location")[0]);
+	searchBox.setBounds(map.getBounds());
+
+	map.addListener('bounds_changed', function() {
+		searchBox.setBounds(map.getBounds());
+	});
     
 	searchBox.addListener('places_changed', function() {
 		var places = searchBox.getPlaces();
@@ -212,18 +248,17 @@ function initMap() {
 			}
 
 			// Create a marker for each place.
-			new google.maps.Marker({
-				map: map,
-				title: place.name,
-				position: place.geometry.location
-			});
-			findClosestLine(place.geometry.location);
+			addMarkerAtLocation(place.geometry.location);
 		});
 	});
 	
 	div.find("#cur-loc-button").on("click", function() {
-		addMarkerAtLocation();
+		addMarkerAtCurrentLocation();
 		return false;
+	});
+
+	map.addListener("click", function() {
+		clearEditable();
 	});
 }
 
