@@ -260,6 +260,8 @@ function initMap() {
 	map.addListener("click", function() {
 		clearEditable();
 	});
+
+	
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
