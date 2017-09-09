@@ -10,8 +10,14 @@ function initMap() {
             lat: 33.9193213,
             lng: -84.31686020000001
         },
-        zoom: 11
+        zoom: 11,
+        disableDefaultUI: true
     });
+    
+	var ctaLayer = new google.maps.KmlLayer({
+		url: 'http://googlemaps.github.io/js-v2-samples/ggeoxml/cta.kml',
+		map: map
+	});
     // infoWindow = new google.maps.InfoWindow;
 
     // Try HTML5 geolocation.
@@ -38,6 +44,10 @@ function initMap() {
         // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
     }
+    var div = $("#search-menu").clone();
+    var searchBox = new google.maps.places.SearchBox(div.find("#search-location")[0]);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(div[0]);
+    div.show();
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -47,4 +57,4 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     //                       'Error: The Geolocation service failed.' :
     //                       'Error: Your browser doesn\'t support geolocation.');
     // infoWindow.open(map);
-} // This is just a sample script. Paste your real code (javascript or HTML) here.
+}
