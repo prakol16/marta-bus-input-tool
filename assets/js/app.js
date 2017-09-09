@@ -1,26 +1,14 @@
 ---
 ---
 
-const ready = (function() {
-  if (document.readyState === 'interactive' || document.readyState === 'complete') {
-    return Promise.resolve();
-  } else {
-    return new Promise(resolve => {
-      document.addEventListener('DOMContentLoaded', resolve);
-    })
-  }
-})();
-
-const loaded = (function() {
-  if (document.readyState === 'complete') {
-    return Promise.resolve();
-  } else {
-    return new Promise(resolve => {
-      document.addEventListener('load', resolve);
-    })
-  }
-})();
-
-ready.then(function() {
-  console.log('ready');
+var map;
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+	  center: {lat: -34.397, lng: 150.644},
+	  zoom: 8
+	});
+}
+$(document).ready(function() {
+	$("#tabs").tabs();
+	console.log("Hi");
 });
