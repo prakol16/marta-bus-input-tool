@@ -1,1 +1,5 @@
 google_maps_api_key: AIzaSyDq2rnyOFGcV2GMtYdai6ehxRMpuzPKYT0
+
+#  https://prakol16.github.io/marta-bus-input-tool/
+baseurl: "/marta-bus-input-tool/" # the subpath of your site, e.g. /blog
+url: "https://prakol16.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
