@@ -2,7 +2,7 @@
 // prompted by your browser. If you see the error "The Geolocation service
 // failed.", it means you probably did not give permission for the browser to
 // locate you.
-var map, infoWindow, lines = [], successfulLines = [], gmarkers = [], locationMarkers = [], modifiedLines = {};
+var map, infoWindow, lines = [], successfulLines = [], gmarkers = [], locationMarkers = [], modifiedLines = {}, highlightedMarker;
 
 var MAX_RESOLUTION = 500;
 
@@ -57,7 +57,7 @@ function makeEditable(line) {
 	var path = line.getPath();
 	var locations = path.getArray();
 	line.binder = new MVCArrayBinder(path);
-	var resolution = Math.max(1, Math.round(Math.min(MAX_RESOLUTION, locations.length / 10)));
+	var resolution = Math.max(1, Math.round(Math.min(MAX_RESOLUTION, locations.length / 20)));
 	for(var i = 0; i < locations.length; i+=resolution) {
 		var evt = {};
 		evt.latLng = locations[i];
@@ -160,7 +160,7 @@ function addMarkerAtCurrentLocation() {
 			};
 			// infoWindow.setPosition(pos);
 			// infoWindow.setContent('Your Location');
-			addMarkerAtLocation(pos);
+			addMarkerAtLocation(pos, "your location");
 		}, function() {
 			handleLocationError(true, infoWindow, map.getCenter());
 		});
@@ -170,7 +170,7 @@ function addMarkerAtCurrentLocation() {
 	}
 }
 
-function addMarkerAtLocation(pos) {
+function addMarkerAtLocation(pos, name) {
 	console.log("Position", pos);
 	var latLng = pos instanceof google.maps.LatLng ? pos : new google.maps.LatLng(pos);
 	for (var i = 0; i < locationMarkers.length; ++i) {
@@ -184,13 +184,15 @@ function addMarkerAtLocation(pos) {
 		position: pos,
 		map: map
 	});
+	marker.set("stopName", name);
 	marker.addListener("click", function() {
-		findClosestLine(this.position);
 		map.setCenter(latLng);
+		findClosestLine(this.position);
+		// show submit button
+		$("#search-menu #add-stop").show().text("Submit suggested stop: " + this.get("stopName"));
 	});
 	locationMarkers.push(marker);
-	map.setCenter(latLng);
-	findClosestLine(latLng);
+	google.maps.event.trigger(marker, "click");
 }
 
 
@@ -248,7 +250,7 @@ function initMap() {
 			}
 
 			// Create a marker for each place.
-			addMarkerAtLocation(place.geometry.location);
+			addMarkerAtLocation(place.geometry.location, place.name);
 		});
 	});
 	
