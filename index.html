@@ -43,15 +43,15 @@
     <script src="jquery-ui/jquery-ui.js"></script>
     <script src="assets/js/app.js"></script>
 </head>
-
 <body>
     <div id="map"></div>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHxxIBaipxzGs23BcQ-MNkcTPOiud7fc&libraries=places&callback=initMap">
     </script>
 	<div id="search-menu-clone" style="display: none;">
-		<div id="dialog" title="Hello!">
-	  		<p>Would you like a location to a bus route? Search for a location or use your current one. Then submit, or change the route manually and submit your suggestions!</p>
+		<div id="dialog" title="Help">
+	  		<p>This is a crowd based app where everyone can input information in order to improve the marta bus path. With this app you can search for a location or use your current location (on the top of the screen) and find bus paths next to it. Then you can tap on the line you would like to change and you can change the path by dragging the red dots to how you would like to form the path. If you need to see this again just click the help button. Enjoy!</p>
 		</div>
+		
 		<form>
 		<p>Search for a location: <input type="text" id="search-location" /></p>
 		<p>
@@ -63,6 +63,10 @@
 		<button type="submit" class="ui-button ui-widget ui-corner-all ui-state-disabled" title="Make route modifications" id="suggest-new-routes" disabled>Submit new routes</button>
 		</p>
 		</form>
+		
+		<div id="help">
+			<button type="submit" id="helpOpener">Help</button>
+		</div>
 	</div>
 </body>
 
