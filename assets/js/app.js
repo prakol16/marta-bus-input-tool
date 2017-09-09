@@ -2,9 +2,20 @@
 // prompted by your browser. If you see the error "The Geolocation service
 // failed.", it means you probably did not give permission for the browser to
 // locate you.
+// Initialize Firebase
+var config = {
+	apiKey: "AIzaSyAgbrZEdVV_jmoZ6wIKL37WjmYgtnLNsrI",
+	authDomain: "marta-input.firebaseapp.com",
+	databaseURL: "https://marta-input.firebaseio.com",
+	projectId: "marta-input",
+	storageBucket: "marta-input.appspot.com",
+	messagingSenderId: "822634791650"
+};
+firebase.initializeApp(config);
+
 var map, infoWindow, lines = [], successfulLines = [], gmarkers = [], locationMarkers = [], modifiedLines = {}, highlightedMarker;
 
-var MAX_RESOLUTION = 500;
+var MAX_RESOLUTION = 150;
 
 function readRoute(callback) {
 	return $.ajax("SHAPES.txt").done(function(result) {
@@ -84,6 +95,7 @@ $(window).on("load", function() {
 			var resolution = parseInt(splitKey[1]);
 			var ikey = parseInt(splitKey[0]);
 			var id = splitKey[2];
+			if (Object.keys(modifiedLines).length === 0) $("#search-menu #suggest-new-routes").attr("disabled", false).removeClass("ui-state-disabled");
 			modifiedLines[id] = true;
 			var start = Math.max(0, ikey - resolution), startPos = this.array_.getAt(start);
 			var end = Math.min(this.array_.length, ikey + resolution), endPos = this.array_.getAt(end - 1);
@@ -189,7 +201,7 @@ function addMarkerAtLocation(pos, name) {
 		map.setCenter(latLng);
 		findClosestLine(this.position);
 		// show submit button
-		$("#search-menu #add-stop").show().text("Submit suggested stop: " + this.get("stopName"));
+		$("#search-menu #add-stop").attr("disabled", false).removeClass("ui-state-disabled").attr("title", "").text("Submit suggested stop: " + this.get("stopName"));
 	});
 	locationMarkers.push(marker);
 	google.maps.event.trigger(marker, "click");
@@ -263,7 +275,16 @@ function initMap() {
 		clearEditable();
 	});
 
-	
+	div.find("#dialog").dialog({
+		position: {
+			my: "right top",
+			at: "right top"
+		}
+	});
+	div.find("button[type=submit]").tooltip();
+
+	div.find("#add-stop").on("click", function() {
+	});
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {

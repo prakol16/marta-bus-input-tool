@@ -32,13 +32,15 @@
 			margin-bottom: 3px;
 			margin-top: 3px;
 		}
-		#search-menu button {
-			
+		.ui-dialog {
+			margin-top: 10%;
+			margin-right: 5%;
 		}
 		#search-menu input[type=text] {
 			font-size: 15px;
 		}
     </style>
+    <script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
     <script src="jquery.js"></script>
     <link rel="stylesheet" href="jquery-ui/jquery-ui.css" />
     <script src="jquery-ui/jquery-ui.js"></script>
@@ -49,18 +51,22 @@
     <div id="map"></div>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHxxIBaipxzGs23BcQ-MNkcTPOiud7fc&libraries=places&callback=initMap">
     </script>
-		<div id="search-menu-clone" style="display: none;">
-			<form>
-			<p>Search for a location: <input type="text" id="search-location" /></p>
-			<p>
-			Drop a marker at
-			<button class="ui-button ui-widget ui-corner-all" id="cur-loc-button">your current location</button>
-			</p>
-			<p>
-			<button type="submit" class="ui-button ui-widget ui-corner-all" id="add-stop" style="display:none;">Submit suggested stop</button>
-			</p>
-			</form>
+	<div id="search-menu-clone" style="display: none;">
+		<div id="dialog" title="Hello!">
+	  		<p>Would you like a location to a bus route? Search for a location or use your current one. Then submit, or change the route manually and submit your suggestions!</p>
 		</div>
+		<form>
+		<p>Search for a location: <input type="text" id="search-location" /></p>
+		<p>
+		Drop a marker at
+		<button class="ui-button ui-widget ui-corner-all" id="cur-loc-button">your current location</button>
+		</p>
+		<p>
+		<button type="submit" class="ui-button ui-widget ui-corner-all ui-state-disabled" title="Choose a stop" id="add-stop" disabled>Submit suggested stop</button>
+		<button type="submit" class="ui-button ui-widget ui-corner-all ui-state-disabled" title="Make route modifications" id="suggest-new-routes" disabled>Submit new routes</button>
+		</p>
+		</form>
+	</div>
 </body>
 
 </html>
