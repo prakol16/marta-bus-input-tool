@@ -1,9 +1,6 @@
----
----
-
-<!DOCTYPE html>
 <html>
-  <head>
+  <head></head>
+  <body>
     <title>Improve our Bus Routes</title>
     <script src="jquery.js"></script>
     <script src="jquery-ui/jquery-ui.js"></script>
@@ -17,8 +14,6 @@
         left: -10000px !important;
       }
     </style>
-  </head>
-  <body>
     <div id="tabs">
       <ul>
         <li><a href="#basic-view">Basic view</a></li>
@@ -40,7 +35,7 @@
         });
       }
       $("#tabs").tabs();
-      $("#tabs").on("tabsactivate", function() {
+      $("#tabs").on("tabsload", function() {
         console.log("Here");
         google.maps.event.trigger(map, "resize");
       });
