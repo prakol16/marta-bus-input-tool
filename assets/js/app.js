@@ -356,7 +356,7 @@ function initMap() {
 		if (places.length == 0) {
 			return;
 		}
-		places.forEach(function(place) {
+		var place = places[0];
         	if (!place.geometry) {
 				console.log("Returned place contains no geometry");
 				return;
@@ -364,7 +364,6 @@ function initMap() {
 
 			// Create a marker for each place.
 			addMarkerAtLocation(place.geometry.location, place.name);
-		});
 	});
 	
 	div.find("#cur-loc-button").on("click", function() {
