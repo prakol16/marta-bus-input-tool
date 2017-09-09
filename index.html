@@ -9,16 +9,25 @@
       #map {
         height: 100%;
       }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+      .ui-tabs .ui-tabs-hide {
+        position: absolute !important;
+        left: -10000px !important;
       }
     </style>
   </head>
   <body>
-    <div id="map"></div>
+    <div id="tabs">
+      <ul>
+        <li><a href="#basic-view">Basic view</a></li>
+        <li><a href="#map-view">Map</a></li>
+      </ul>
+      <div id="basic-view">
+        Basic view
+      </div>
+      <div id="map-view">
+        <div id="map"></div>
+      </div>
+    </div>
     <script>
       var map;
       function initMap() {
@@ -27,6 +36,11 @@
           zoom: 8
         });
       }
+      $("#tabs").tabs();
+      $("#tabs").on("tabsactivate", function() {
+        console.log("Here");
+        google.maps.event.trigger(map, "resize");
+      });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
     async defer></script>
