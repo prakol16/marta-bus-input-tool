@@ -1,15 +1,10 @@
-// Note: This example requires that you consent to location sharing when
-// prompted by your browser. If you see the error "The Geolocation service
-// failed.", it means you probably did not give permission for the browser to
-// locate you.
-// Initialize Firebase
 var config = {
-	apiKey: "AIzaSyAgbrZEdVV_jmoZ6wIKL37WjmYgtnLNsrI",
-	authDomain: "marta-input.firebaseapp.com",
-	databaseURL: "https://marta-input.firebaseio.com",
-	projectId: "marta-input",
-	storageBucket: "marta-input.appspot.com",
-	messagingSenderId: "822634791650"
+	apiKey: "AIzaSyAuwQTJv_PwhhhWa8-jZOFUuLYmLHkQx-U",
+	authDomain: "marta-input-f296d.firebaseapp.com",
+	databaseURL: "https://marta-input-f296d.firebaseio.com",
+	projectId: "marta-input-f296d",
+	storageBucket: "",
+	messagingSenderId: "629280625623"
 };
 firebase.initializeApp(config);
 
