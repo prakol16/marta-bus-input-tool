@@ -3,14 +3,43 @@ var config = {
 	authDomain: "marta-input-f296d.firebaseapp.com",
 	databaseURL: "https://marta-input-f296d.firebaseio.com",
 	projectId: "marta-input-f296d",
-	storageBucket: "",
+	storageBucket: "marta-input-f296d.appspot.com",
 	messagingSenderId: "629280625623"
 };
 firebase.initializeApp(config);
 
+function getDateString() {
+    var temp = new Date();
+    var dateStr = padStr(temp.getFullYear()) +
+                  padStr(1 + temp.getMonth()) +
+                  padStr(temp.getDate()) +
+                  padStr(temp.getHours()) +
+                  padStr(temp.getMinutes()) +
+                  padStr(temp.getSeconds());
+    return dateStr;
+}
+
+function padStr(i) {
+    return (i < 10) ? "0" + i : "" + i;
+}
+
+var storageRef = firebase.storage().ref();
+var addStopChildFile = storageRef.child("submission-stops-" + getDateString() + "-id-" + Math.random().toString().slice(2) + ".txt");
 var map, infoWindow, lines = [], successfulLines = [], gmarkers = [], locationMarkers = [], modifiedLines = {}, highlightedMarker;
 
 var MAX_RESOLUTION = 150;
+
+function uploadCurrentDesiredStops() {
+	var str = [];
+	for (var i = 0; i < locationMarkers.length; ++i) {
+		var marker = locationMarkers[i];
+		str.push([marker.get("stopName"), marker.position.lat(), marker.position.lng()].join());
+	}
+	addStopChildFile.putString(str.join("\n")).then(function(snapshot) {
+		console.log("Successfully uploaded!");
+	});
+	$("#search-menu #add-stop").attr("disabled", true).addClass("ui-state-disabled").text("Submit suggested stop");
+}
 
 function readRoute(callback) {
 	return $.ajax("SHAPES.txt").done(function(result) {
@@ -192,13 +221,15 @@ function addMarkerAtLocation(pos, name) {
 		map: map
 	});
 	marker.set("stopName", name);
+	locationMarkers.push(marker);
 	marker.addListener("click", function() {
 		map.setCenter(latLng);
 		findClosestLine(this.position);
+		var len = locationMarkers.length;
 		// show submit button
-		$("#search-menu #add-stop").attr("disabled", false).removeClass("ui-state-disabled").attr("title", "").text("Submit suggested stop: " + this.get("stopName"));
+		$("#search-menu #add-stop").attr("disabled", false).removeClass("ui-state-disabled").attr("title", "")
+			.text(len === 1 ? "Submit suggested stop" : "Submit " + len + " suggested stops");
 	});
-	locationMarkers.push(marker);
 	google.maps.event.trigger(marker, "click");
 }
 
@@ -278,7 +309,11 @@ function initMap() {
 	});
 	div.find("button[type=submit]").tooltip();
 
-	div.find("#add-stop").on("click", function() {
+	div.find("#add-stop").on("click", function(e) {
+		console.log("Submitting");
+		e.preventDefault();
+		uploadCurrentDesiredStops();
+		return false;
 	});
 }
 
