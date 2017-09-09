@@ -38,8 +38,9 @@ function initMap() {
         // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
     }
-    var button = $("<div id='search-menu'>Test</div>");
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(button[0]);
+    var div = $("#search-menu").clone();
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(div[0]);
+    div.show();
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
