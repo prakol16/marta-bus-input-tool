@@ -24,10 +24,13 @@ function padStr(i) {
 }
 
 var storageRef = firebase.storage().ref();
-var addStopChildFile = storageRef.child("submission-stops-" + getDateString() + "-id-" + Math.random().toString().slice(2) + ".txt");
-var map, infoWindow, lines = [], successfulLines = [], gmarkers = [], locationMarkers = [], modifiedLines = {}, highlightedMarker;
+var uniqueFileNameEnd =  getDateString() + "-id-" + Math.random().toString().slice(2);
+var addStopChildFile = storageRef.child("submission-stops-" + uniqueFileNameEnd + ".txt");
+var map, infoWindow, lines = [], successfulLines = [], gmarkers = [], locationMarkers = [], modifiedLines = {}, otherUserLines = [], originalRoutes;
 
 var MAX_RESOLUTION = 150;
+
+var getColor = function(x) { return "rgb(" + (x % 256) + "," + (x*31 % 256) + "," + (x*123 % 256)+")"; };
 
 function uploadCurrentDesiredStops() {
 	var str = [];
@@ -39,6 +42,54 @@ function uploadCurrentDesiredStops() {
 		console.log("Successfully uploaded!");
 	});
 	$("#search-menu #add-stop").attr("disabled", true).addClass("ui-state-disabled").text("Submit suggested stop");
+}
+
+function clearOtherUserLines() {
+	while (otherUserLines.length)
+		otherUserLines.pop().setMap(null);
+}
+
+function drawOtherUserLine(line) {
+	clearOtherUserLines();
+	var finalPath = [], orig = originalRoutes[line.id];
+	for (var i = 0; i < orig.length; ++i) {
+		if (line.pts[i]) {
+			var spl = line.pts[i];
+			finalPath.push({lat: spl[0], lng: spl[1]});
+		} else {
+			finalPath.push(orig[i]);
+		}
+	}
+	var ln = new google.maps.Polyline({
+		path: finalPath,
+		geodesic: true,
+		strokeColor: getColor(line.id),
+		strokeOpacity: 0.5,
+		strokeWeight: 2
+	});
+	console.log(window.FINALPATH = finalPath);
+	ln.setMap(map);
+	otherUserLines.push(ln);
+}
+
+function uploadRoutes() {
+	for (var id in modifiedLines) {
+		if (modifiedLines[id].modified) {
+			var str = [];
+			var path = lines.filter(x => x.id === id)[0].getPath().getArray();
+			var modifiedLine = modifiedLines[id].modifications;
+			for (var num in modifiedLine) {
+				str.push([num, path[num].lat(), path[num].lng()].join());
+			}
+			var directory = "route-" + id + "/"
+			var p = "submission-" + uniqueFileNameEnd + ".txt";
+			var routeFile = storageRef.child(directory + p);
+			routeFile.putString(str.join("\n")).then(function(snapshot) { console.log("Successfully uploaded id " + id); });
+			firebase.database().ref(directory).push(p);
+			modifiedLines[id].modified = false; 
+		}
+	}
+	$("#search-menu #suggest-new-routes").attr("disabled", true).addClass("ui-state-disabled");
 }
 
 function readRoute(callback) {
@@ -119,12 +170,14 @@ $(window).on("load", function() {
 			var resolution = parseInt(splitKey[1]);
 			var ikey = parseInt(splitKey[0]);
 			var id = splitKey[2];
-			if (Object.keys(modifiedLines).length === 0) $("#search-menu #suggest-new-routes").attr("disabled", false).removeClass("ui-state-disabled");
-			modifiedLines[id] = true;
+			$("#search-menu #suggest-new-routes").attr("disabled", false).removeClass("ui-state-disabled");
+			if (!modifiedLines[id]) modifiedLines[id] = {modified: true, modifications: {}};
+			modifiedLines[id].modified = true;		
 			var start = Math.max(0, ikey - resolution), startPos = this.array_.getAt(start);
 			var end = Math.min(this.array_.length, ikey + resolution), endPos = this.array_.getAt(end - 1);
 			for (var i = start; i < end; ++i) {
-				var newPos;
+				var newPos;	
+				modifiedLines[id].modifications[i] = true;
 				if (i < ikey) {
 					var lat = (val.lat() - startPos.lat()) * (i - start) / resolution + startPos.lat(),
 						lng = (val.lng() - startPos.lng()) * (i - start) / resolution + startPos.lng();
@@ -227,7 +280,7 @@ function addMarkerAtLocation(pos, name) {
 		findClosestLine(this.position);
 		var len = locationMarkers.length;
 		// show submit button
-		$("#search-menu #add-stop").attr("disabled", false).removeClass("ui-state-disabled").attr("title", "")
+		$("#search-menu #add-stop").attr("disabled", false).removeClass("ui-state-disabled")
 			.text(len === 1 ? "Submit suggested stop" : "Submit " + len + " suggested stops");
 	});
 	google.maps.event.trigger(marker, "click");
@@ -243,7 +296,6 @@ function initMap() {
         zoom: 10,
         disableDefaultUI: true
     });
-	var getColor = function(x) { return "rgb(" + (x % 256) + "," + (x*31 % 256) + "," + (x*123 % 256)+")"; };
 	readRoute(function(routes) {
 		var ind = 0;
 		for (var id in routes) {
@@ -258,11 +310,34 @@ function initMap() {
         	lines[ind].setMap(map);
 			lines[ind].addListener("click", function() {
 				makeEditable(this);
+				var routeId = this.get("id");
+				var route = "route-" + this.get("id");
+				var otherRoutes = firebase.database().ref(route).orderByKey();
+				otherRoutes.on("value", function(snap) {
+					snap.forEach(function(otherRoute) {
+						var fileName = otherRoute.val();
+						console.log("Should load", fileName);
+						storageRef.child(route + "/" + fileName).getDownloadURL().then(function(url) {
+							console.log("Downloading resource at", url);
+							$.ajax(url).done(function(result) {
+								var lines = result.split("\n");
+								var res = {id: routeId, pts: {}};
+								for (var i = 0; i < lines.length; ++i) {
+									var line = lines[i].split(",");
+									res.pts[line[0]] = [parseFloat(line[1]), parseFloat(line[2])];
+								}
+								drawOtherUserLine(res);
+							});
+						});
+					});
+				});
 			});
         	ind++;
 		}
 	});
-
+	readRoute(function(routes) {
+		originalRoutes = routes;
+	});
 
     var div = $("#search-menu-clone").clone();
 	div.attr("id", "search-menu");
@@ -299,6 +374,7 @@ function initMap() {
 
 	map.addListener("click", function() {
 		clearEditable();
+		clearOtherUserLines();
 	});
 
 	div.find("#dialog").dialog({
@@ -307,12 +383,16 @@ function initMap() {
 			at: "right top"
 		}
 	});
-	div.find("button[type=submit]").tooltip();
 
 	div.find("#add-stop").on("click", function(e) {
 		console.log("Submitting");
-		e.preventDefault();
 		uploadCurrentDesiredStops();
+		return false;
+	});
+
+	div.find("#suggest-new-routes").on("click", function() {
+		console.log("Submitting");
+		uploadRoutes();
 		return false;
 	});
 }
