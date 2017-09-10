@@ -3,13 +3,101 @@
 
 <head>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <title>Improve Our Bus Routes</title>
+    <title>Marta Direct</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
 	    #dialog{
 		  text-align: center;
 		}	
+		
+		.box {
+		  position: fixed;
+		  bottom: 0;
+		  padding-right: 0;
+		  right: 0;
+		  background-clip: padding-box;
+		  text-align: right;
+		}	
+		.button {
+		  margin-bottom: 15px;
+		  margin-right: 5px;
+		  font-size: 12px;
+		  padding: 10px;
+		  color: #06D85F;
+		  border: 2px solid #06D85F;
+		  border-radius: 5px;
+		  text-decoration: none;
+		  cursor: pointer;
+		  transition: .3s;
+		  -webkit-transition: .3s;
+		  -moz-transition: .3s;
+		  -o-transition: .3s;
+		  display: inline-block;
+		}
+		.button:hover {
+		  color: #ffffff;
+		  background: #06D85F;
+		}
+
+		.overlay {
+		  position: fixed;
+		  top: 0;
+		  bottom: 0;
+		  left: 0;
+		  right: 0;
+		  background: rgba(0, 0, 0, 0.7);
+		  transition: opacity 500ms;
+		  visibility: hidden;
+		  opacity: 0;
+		}
+		.overlay:target {
+		  visibility: visible;
+		  opacity: 1;
+		}
+
+		.popup {
+		  margin: 70px auto;
+		  padding: 20px;
+		  background: #fff;
+		  border-radius: 5px;
+		  width: 30%;
+		  position: relative;
+		  transition: all 5s ease-in-out;
+		}
+
+		.popup h2 {
+		  margin-top: 0;
+		  color: #333;
+		  font-family: Tahoma, Arial, sans-serif;
+		}
+		.popup .close {
+		  position: absolute;
+		  top: 20px;
+		  right: 30px;
+		  transition: all 200ms;
+		  font-size: 30px;
+		  font-weight: bold;
+		  text-decoration: none;
+		  color: #333;
+		}
+		.popup .close:hover {
+		  color: #06D85F;
+		}
+		.popup .content {
+		  max-height: 30%;
+		  overflow: auto;
+		}
+
+		@media screen and (max-width: 700px){
+		  .box{
+			width: 70%;
+		  }
+		  .popup{
+			width: 70%;
+		  }
+		}
+
 		.link {
 		  border-bottom: 2px dotted #55acee;
 		  text-decoration: none;
@@ -148,9 +236,6 @@
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWHxxIBaipxzGs23BcQ-MNkcTPOiud7fc&libraries=places&callback=initMap">
     </script>
 	<div id="search-menu-clone" style="display: none;">
-		<div id="dialog" title="Help">
-	  		<p>This is a crowd based app where everyone can input information in order to improve the marta bus path. With this app you can search for a location or use your current location (on the top of the screen) and find bus paths next to it. Then you can tap on the line you would like to change and you can change the path by dragging the red dots to how you would like to form the path. If you need to see this again just click the help button. Enjoy!</p>
-		</div>
 		
 		<p>Search for a location: <input type="text" id="search-location" /></p>
 		<p>
@@ -161,7 +246,19 @@
 		<a type="submit" class="btn yellow" title="Choose a stop" id="add-stop" disabled>Submit suggested stop</a>
 		<a type="submit" class="btn orange" title="Make route modifications" id="suggest-new-routes" disabled>Submit new routes</a>
 		</p>
-	</div>
+		<div class="box">
+			<a class="button" href="#popup1">Help</a>
+		</div>
+		
+		<div id="popup1" class="overlay">
+			<div class="popup">
+				<h2>Help</h2>
+				<a class="close" href="#">&times;</a>
+				<div class="content">
+					This is a crowd based app where everyone can input information in order to improve the marta bus path. With this app you can search for a location or use your current location (on the top of the screen) and find bus paths next to it. Then you can tap on the line you would like to change and you can change the path by dragging the red dots to how you would like to form the path. If you need to see this again just click the help button. Enjoy!</p>
+				</div>
+			</div>
+		</div>
 </body>
 
 </html>
