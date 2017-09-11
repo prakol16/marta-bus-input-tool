@@ -1,0 +1,247 @@
+{
+  "services": {
+    "parse": {
+      "pushEnabled": false,
+      "active": false
+    },
+    "facebook": {
+      "active": false
+    },
+    "oneSignal": {
+      "active": false
+    },
+    "registration": {
+      "endpoints": [
+        {
+          "dataType": [
+            "parse",
+            "oneSignal"
+          ],
+          "urlRegex": null,
+          "url": null
+        }
+      ],
+      "active": false
+    },
+    "analytics": {
+      "active": false
+    },
+    "push": {
+      "active": false
+    }
+  },
+  "performance": {
+    "webviewPools": [
+      {
+        "urls": [
+          {
+            "disown": "reload"
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "usesGeolocation": true,
+    "androidDownloadToPublicStorage": false,
+    "enableWebRTC": false
+  },
+  "forms": {
+    "signupConfig": {
+      "active": false,
+      "formSelector": null,
+      "formInputs": []
+    },
+    "loginConfig": {
+      "formSelector": null,
+      "loginIsFirstPage": false,
+      "formInputs": []
+    },
+    "interceptForms": {
+      "forms": []
+    }
+  },
+  "styling": {
+    "icon": "https://gonativeio.s3.amazonaws.com/uploads/2q70ue73t4h94_1505147734653.png",
+    "iosHeaderImage": "images/logo1.png",
+    "showActionBar": false,
+    "showNavigationBar": false,
+    "iosSidebarFont": "Default",
+    "androidHideTitleInActionBar": false,
+    "navigationTitleImage": false,
+    "iosTheme": "light",
+    "androidTheme": "light",
+    "androidSidebarBackgroundColor": "#FFFFFF",
+    "androidSidebarForegroundColor": "#777777",
+    "androidActionBarBackgroundColor": "#bdbdbd",
+    "androidActionBarForegroundColor": "#000000",
+    "androidPullToRefreshColor": "#777777",
+    "androidAccentColor": "#009688",
+    "androidSidebarSeparatorColor": "#585858",
+    "androidTabBarBackgroundColor": "#bdbdbd",
+    "androidTabBarTextColor": "#000000",
+    "androidTabBarIndicatorColor": "#000000",
+    "iosTitleColor": "#333333",
+    "iosTintColor": "#0091fe",
+    "iosSidebarTextColor": "#333333",
+    "androidStatusBarBackgroundColor": "#909090",
+    "hideWebviewAlpha": 0.5,
+    "disableAnimations": false,
+    "androidShowSplash": true,
+    "androidLaunchImages": {
+      "mdpi": "https://s3.amazonaws.com/gonativeio/images_generated/1505147796050_mbk4tggkpjbzj_180x180.9.png",
+      "hdpi": "https://s3.amazonaws.com/gonativeio/images_generated/1505147796050_kwgbg0j1g7wam_270x270.9.png",
+      "xhdpi": "https://s3.amazonaws.com/gonativeio/images_generated/1505147796050_d4tkuy88jjmu0_360x360.9.png",
+      "xxhdpi": "https://s3.amazonaws.com/gonativeio/images_generated/1505147796050_0q262u1bnnmze_540x540.9.png",
+      "xxxhdpi": "https://s3.amazonaws.com/gonativeio/images_generated/1505147796050_fv26b1xwzg712_720x720.9.png"
+    },
+    "menuAnimationDuration": 0.15,
+    "transitionInteractiveDelayMax": 0.2
+  },
+  "navigation": {
+    "androidShowRefreshButton": false,
+    "iosShowRefreshButton": false,
+    "deepLinkDomains": [],
+    "navigationLevels": {
+      "levels": [
+        null
+      ]
+    },
+    "toolbarNavigation": null,
+    "ignorePageFinishedRegexes": [],
+    "redirects": [],
+    "navigationTitles": {
+      "titles": [
+        null
+      ]
+    },
+    "regexInternalExternal": {
+      "rules": [
+        {
+          "regex": "^(?!https?://).*",
+          "internal": false
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*facebook\\.com/login.php.*",
+          "internal": true
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*facebook\\.com/dialog.*",
+          "internal": true
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*facebook\\.com/v1\\.0/.*",
+          "internal": true
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*facebook\\.com/oauth.*",
+          "internal": true
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*facebook\\.com/v2\\.0/.*",
+          "internal": true
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*facebook\\.com/checkpoint.*",
+          "internal": true
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*facebook\\.com.*",
+          "internal": true
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*plus\\.google\\.com/share.*",
+          "internal": false
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*twitter\\.com/.*",
+          "internal": false
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*instagram\\.com/.*",
+          "internal": false
+        },
+        {
+          "regex": "https?://maps\\.google\\.com.*",
+          "internal": false
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*linkedin\\.com/.*",
+          "internal": false
+        },
+        {
+          "regex": "https?://([-\\w]+\\.)*google\\.com/maps/search/.*",
+          "internal": false
+        },
+        {
+          "regex": ".*",
+          "internal": true
+        }
+      ]
+    },
+    "sidebarNavigation": {
+      "menus": [
+        {
+          "name": "default",
+          "active": false,
+          "items": null
+        },
+        {
+          "name": "loggedIn",
+          "active": false,
+          "items": null
+        }
+      ],
+      "menuSelectionConfig": {
+        "testURL": null,
+        "redirectLocations": [
+          {
+            "regex": null,
+            "menuName": "default",
+            "loggedIn": false
+          },
+          {
+            "regex": ".*",
+            "menuName": "default",
+            "loggedIn": true
+          }
+        ]
+      }
+    },
+    "tabNavigation": {
+      "tabMenus": [
+        {
+          "id": "1",
+          "items": [
+            {
+              "subLinks": []
+            }
+          ]
+        }
+      ],
+      "tabSelectionConfig": [
+        {
+          "id": "1",
+          "regex": ""
+        }
+      ]
+    },
+    "iosPullToRefresh": true,
+    "androidPullToRefresh": false
+  },
+  "general": {
+    "userAgentAdd": "gonative",
+    "useWKWebView": true,
+    "enableWindowOpen": true,
+    "useCrosswalkWebView": false,
+    "forceScreenOrientation": null,
+    "initialUrl": "https://prakol16.github.io/marta-bus-input-tool/",
+    "appName": "Marta Direct",
+    "publicKey": "zbzzxd",
+    "deviceRegKey": "9cvxr7d7ktecm3a2ezwc4mjubc",
+    "replaceStrings": [],
+    "userAgentRegexes": [],
+    "iosBundleId": "io.gonative.ios.zbzzxd",
+    "androidPackageName": "io.gonative.android.zbzzxd"
+  }
+}
